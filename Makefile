@@ -1,9 +1,8 @@
 
-all:
-	gcc gst-discoverer.c -o gst-discoverer `pkg-config --cflags --libs gstreamer-1.0 gstreamer-pbutils-1.0`
+all: testmediainfo
 
 clean:
-	rm -rf *.o gst-discoverer testmediainfo libmediainfo.so
+	rm -rf *.o testmediainfo libmediainfo.so
 
 mediainfo:
 	gcc -g -O2 printinfo.c mediainfo.c `pkg-config --cflags --libs gstreamer-1.0 gstreamer-pbutils-1.0` -fPIC -shared -o libmediainfo.so -Xlinker -zmuldefs
