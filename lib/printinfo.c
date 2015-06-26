@@ -53,27 +53,27 @@ void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 			}
 		case GST_DISCOVERER_URI_INVALID:
 			{
-				offset += snprintf (msg+offset, sizeof(msg)-offset, "URI is not valid\n");
+				//offset += snprintf (msg+offset, sizeof(msg)-offset, "URI is not valid\n");
 				break;
 			}
 		case GST_DISCOVERER_ERROR:
 			{
-				offset += snprintf (msg+offset, sizeof(msg)-offset, "An error was encountered while discovering the file\n");
+				//offset += snprintf (msg+offset, sizeof(msg)-offset, "An error was encountered while discovering the file\n");
 				break;
 			}
 		case GST_DISCOVERER_TIMEOUT:
 			{
-				offset += snprintf (msg+offset, sizeof(msg)-offset, "Analyzing URI timed out\n");
+				//offset += snprintf (msg+offset, sizeof(msg)-offset, "Analyzing URI timed out\n");
 				break;
 			}
 		case GST_DISCOVERER_BUSY:
 			{
-				offset += snprintf (msg+offset, sizeof(msg)-offset, "Discoverer was busy\n");
+				//offset += snprintf (msg+offset, sizeof(msg)-offset, "Discoverer was busy\n");
 				break;
 			}
 		case GST_DISCOVERER_MISSING_PLUGINS:
 			{
-				offset += snprintf (msg+offset, sizeof(msg)-offset, "Missing plugins\n");
+				//offset += snprintf (msg+offset, sizeof(msg)-offset, "Missing plugins\n");
 				break;
 			}
 	}
