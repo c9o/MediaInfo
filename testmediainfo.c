@@ -5,7 +5,7 @@ int main (int argc, char **argv)
 	GError *err = NULL;
 	GstDiscoverer *dc;
 	GstDiscovererInfo *info;
-	gchar * msg;
+	gchar msg[4096];
 
 	if (argc < 2) {
 		g_print ("usage: %s <uris>\n", argv[0]);
@@ -21,7 +21,7 @@ int main (int argc, char **argv)
 	}
 
 	info = process_file (dc, argv[1]);
-	print_info (info, err);
+	print_info (info, err, msg);
 
 	g_print ("%s", msg);
 	g_print ("\n");

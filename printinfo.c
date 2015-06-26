@@ -1,5 +1,6 @@
 #include "printinfo.h"
 #include <stdio.h>
+#include <string.h>
 
 char msg[4096];
 gint offset;
@@ -38,7 +39,7 @@ void print_properties (GstDiscovererInfo * info, gint tab)
 	}
 }
 
-void print_info (GstDiscovererInfo * info, GError * err)
+void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 {
 	GstDiscovererResult result = gst_discoverer_info_get_result (info);
 	GstDiscovererStreamInfo *sinfo;
@@ -85,5 +86,5 @@ void print_info (GstDiscovererInfo * info, GError * err)
 	}
 
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
-	g_print ("%s", msg);
+	strncpy(message, msg, offset);
 }

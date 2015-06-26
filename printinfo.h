@@ -9,6 +9,6 @@
 
 void print_tag_foreach (const GstTagList * tags, const gchar * tag, gpointer user_data);
 void print_properties (GstDiscovererInfo * info, gint tab);
-void print_info (GstDiscovererInfo * info, GError * err);
+void print_info (GstDiscovererInfo * info, GError * err, gchar message[]);
 
 #endif
