@@ -4,26 +4,10 @@
 GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename)
 {
 	GError *err = NULL;
-	GDir *dir;
 	gchar *uri, *path;
 	GstDiscovererInfo *info;
 
 	if (!gst_uri_is_valid (filename)) {
-		/* Recurse into directories */
-		if ((dir = g_dir_open (filename, 0, NULL))) {
-			const gchar *entry;
-
-			while ((entry = g_dir_read_name (dir))) {
-				gchar *path;
-				path = g_strconcat (filename, G_DIR_SEPARATOR_S, entry, NULL);
-				info = process_file (dc, path);
-				g_free (path);
-			}
-
-			g_dir_close (dir);
-			return info;
-		}
-
 		if (!g_path_is_absolute (filename)) {
 			gchar *cur_dir;
 
@@ -47,7 +31,6 @@ GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename)
 		uri = g_strdup (filename);
 	}
 
-	//g_print ("Analyzing %s\n", uri);
 	info = gst_discoverer_discover_uri (dc, uri, &err);
 	if (err)
 		g_error_free (err);
@@ -60,8 +43,8 @@ GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename)
 void media_info (const gchar * filename, gchar msg[])
 {
 	GError *err = NULL;
-	GstDiscoverer *dc;
-	GstDiscovererInfo *info;
+	GstDiscoverer *dc = NULL;
+	GstDiscovererInfo *info = NULL;
 
 	gst_init (NULL, NULL);
 
@@ -72,8 +55,22 @@ void media_info (const gchar * filename, gchar msg[])
 		exit (1);
 	}
 
-	info = process_file (dc, filename);
-	print_info (info, err, msg);
+	if (g_file_test (filename, G_FILE_TEST_IS_DIR))
+	{
+		g_warning ("Do not process dir");
+		return;
+	}
+
+	if (g_file_test (filename, G_FILE_TEST_EXISTS))
+	{
+		info = process_file (dc, filename);
+		print_info (info, err, msg);
+	}
+	else
+	{
+		g_warning ("Not a valid filename");
+		return;
+	}
 
 	g_object_unref (dc);
 	gst_discoverer_info_unref (info);

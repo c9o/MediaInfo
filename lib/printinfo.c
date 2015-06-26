@@ -45,7 +45,7 @@ void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 	GstDiscovererStreamInfo *sinfo;
 	offset = 0;
 
-	//g_print ("Done discovering %s\n", gst_discoverer_info_get_uri (info));
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "File: %s\n", g_filename_from_uri(gst_discoverer_info_get_uri (info), NULL, NULL));
 	switch (result) {
 		case GST_DISCOVERER_OK:
 			{
@@ -59,7 +59,6 @@ void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 		case GST_DISCOVERER_ERROR:
 			{
 				offset += snprintf (msg+offset, sizeof(msg)-offset, "An error was encountered while discovering the file\n");
-				offset += snprintf (msg+offset, sizeof(msg)-offset, " %s\n", err->message);
 				break;
 			}
 		case GST_DISCOVERER_TIMEOUT:
