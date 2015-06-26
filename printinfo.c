@@ -1,4 +1,8 @@
 #include "printinfo.h"
+#include <stdio.h>
+
+char msg[4096];
+gint offset;
 
 void print_tag_foreach (const GstTagList * tags, const gchar * tag,
 		gpointer user_data)
@@ -14,7 +18,7 @@ void print_tag_foreach (const GstTagList * tags, const gchar * tag,
 	else
 		str = gst_value_serialize (&val);
 
-	g_print ("%*s%s: %s\n", 2 * depth, " ", gst_tag_get_nick (tag), str);
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "%*s%s: %s\n", 2 * depth, " ", gst_tag_get_nick (tag), str);
 	g_free (str);
 
 	g_value_unset (&val);
@@ -24,12 +28,12 @@ void print_properties (GstDiscovererInfo * info, gint tab)
 {
 	const GstTagList *tags;
 
-	g_print ("%*sDuration: %" GST_TIME_FORMAT "\n", tab + 1, " ",
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "%*sDuration: %" GST_TIME_FORMAT "\n", tab + 1, " ",
 			GST_TIME_ARGS (gst_discoverer_info_get_duration (info)));
-	g_print ("%*sSeekable: %s\n", tab + 1, " ",
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "%*sSeekable: %s\n", tab + 1, " ",
 			(gst_discoverer_info_get_seekable (info) ? "yes" : "no"));
 	if ((tags = gst_discoverer_info_get_tags (info))) {
-		g_print ("%*sTags: \n", tab + 1, " ");
+		offset += snprintf (msg+offset, sizeof(msg)-offset, "%*sTags: \n", tab + 1, " ");
 		gst_tag_list_foreach (tags, print_tag_foreach, GUINT_TO_POINTER (tab + 1));
 	}
 }
@@ -38,8 +42,9 @@ void print_info (GstDiscovererInfo * info, GError * err)
 {
 	GstDiscovererResult result = gst_discoverer_info_get_result (info);
 	GstDiscovererStreamInfo *sinfo;
+	offset = 0;
 
-	g_print ("Done discovering %s\n", gst_discoverer_info_get_uri (info));
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "Done discovering %s\n", gst_discoverer_info_get_uri (info));
 	switch (result) {
 		case GST_DISCOVERER_OK:
 			{
@@ -47,37 +52,38 @@ void print_info (GstDiscovererInfo * info, GError * err)
 			}
 		case GST_DISCOVERER_URI_INVALID:
 			{
-				g_print ("URI is not valid\n");
+				offset += snprintf (msg+offset, sizeof(msg)-offset, "URI is not valid\n");
 				break;
 			}
 		case GST_DISCOVERER_ERROR:
 			{
-				g_print ("An error was encountered while discovering the file\n");
-				g_print (" %s\n", err->message);
+				offset += snprintf (msg+offset, sizeof(msg)-offset, "An error was encountered while discovering the file\n");
+				offset += snprintf (msg+offset, sizeof(msg)-offset, " %s\n", err->message);
 				break;
 			}
 		case GST_DISCOVERER_TIMEOUT:
 			{
-				g_print ("Analyzing URI timed out\n");
+				offset += snprintf (msg+offset, sizeof(msg)-offset, "Analyzing URI timed out\n");
 				break;
 			}
 		case GST_DISCOVERER_BUSY:
 			{
-				g_print ("Discoverer was busy\n");
+				offset += snprintf (msg+offset, sizeof(msg)-offset, "Discoverer was busy\n");
 				break;
 			}
 		case GST_DISCOVERER_MISSING_PLUGINS:
 			{
-				g_print ("Missing plugins\n");
+				offset += snprintf (msg+offset, sizeof(msg)-offset, "Missing plugins\n");
 				break;
 			}
 	}
 
 	if ((sinfo = gst_discoverer_info_get_stream_info (info))) {
-		g_print ("\nProperties:\n");
+		offset += snprintf (msg+offset, sizeof(msg) - offset, "\nProperties:\n");
 		print_properties (info, 0);
 		gst_discoverer_stream_info_unref (sinfo);
 	}
 
-	g_print ("\n");
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
+	g_print ("%s", msg);
 }
