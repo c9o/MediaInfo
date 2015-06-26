@@ -45,7 +45,7 @@ void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 	GstDiscovererStreamInfo *sinfo;
 	offset = 0;
 
-	offset += snprintf (msg+offset, sizeof(msg)-offset, "Done discovering %s\n", gst_discoverer_info_get_uri (info));
+	//g_print ("Done discovering %s\n", gst_discoverer_info_get_uri (info));
 	switch (result) {
 		case GST_DISCOVERER_OK:
 			{

@@ -1,4 +1,5 @@
 #include "mediainfo.h"
+#include <stdio.h>
 
 GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename)
 {
@@ -46,7 +47,7 @@ GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename)
 		uri = g_strdup (filename);
 	}
 
-	g_print ("Analyzing %s\n", uri);
+	//g_print ("Analyzing %s\n", uri);
 	info = gst_discoverer_discover_uri (dc, uri, &err);
 	if (err)
 		g_error_free (err);
@@ -54,4 +55,26 @@ GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename)
 	g_free (uri);
 
 	return info;
+}
+
+void media_info (const gchar * filename, gchar msg[])
+{
+	GError *err = NULL;
+	GstDiscoverer *dc;
+	GstDiscovererInfo *info;
+
+	gst_init (NULL, NULL);
+
+	dc = gst_discoverer_new (3 * GST_SECOND, &err);
+	if (G_UNLIKELY (dc == NULL)) {
+		g_print ("Error initializing: %s\n", err->message);
+		sprintf (msg, "Error initializing: %s\n", err->message);
+		exit (1);
+	}
+
+	info = process_file (dc, filename);
+	print_info (info, err, msg);
+
+	g_object_unref (dc);
+	gst_discoverer_info_unref (info);
 }
