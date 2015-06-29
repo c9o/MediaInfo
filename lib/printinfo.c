@@ -86,5 +86,4 @@ void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
 	strncpy(message, msg, offset);
-	message[offset] = '\0';
 }
