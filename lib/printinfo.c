@@ -39,7 +39,7 @@ void print_properties (GstDiscovererInfo * info, gint tab)
 	}
 }
 
-void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
+int print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 {
 	GstDiscovererResult result = gst_discoverer_info_get_result (info);
 	GstDiscovererStreamInfo *sinfo;
@@ -86,4 +86,5 @@ void print_info (GstDiscovererInfo * info, GError * err, gchar message[])
 
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
 	strncpy(message, msg, offset);
+	return offset;
 }

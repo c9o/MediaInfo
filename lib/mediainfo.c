@@ -40,11 +40,12 @@ GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename)
 	return info;
 }
 
-void media_info (const gchar * filename, gchar msg[])
+int media_info (const gchar * filename, gchar msg[])
 {
 	GError *err = NULL;
 	GstDiscoverer *dc = NULL;
 	GstDiscovererInfo *info = NULL;
+	int ret = 0;
 
 	gst_init (NULL, NULL);
 
@@ -58,20 +59,21 @@ void media_info (const gchar * filename, gchar msg[])
 	if (g_file_test (filename, G_FILE_TEST_IS_DIR))
 	{
 		g_warning ("Do not process dir");
-		return;
+		return 0;
 	}
 
 	if (g_file_test (filename, G_FILE_TEST_EXISTS))
 	{
 		info = process_file (dc, filename);
-		print_info (info, err, msg);
+		ret = print_info (info, err, msg);
 	}
 	else
 	{
 		g_warning ("Not a valid filename");
-		return;
+		return 0;
 	}
 
 	g_object_unref (dc);
 	gst_discoverer_info_unref (info);
+	return ret;
 }
