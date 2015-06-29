@@ -10,6 +10,6 @@ typedef struct {
 }PrivStruct;
 
 GstDiscovererInfo * process_file (GstDiscoverer * dc, const gchar * filename);
-int media_info (const gchar * filename, gchar msg[]);
+void media_info (const gchar * filename, gchar msg[]);
 
 #endif
