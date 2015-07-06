@@ -33,7 +33,7 @@ static void dump_metadata(void *ctx, AVDictionary *m, const char *indent)
 		while ((tag = av_dict_get(m, "", tag, AV_DICT_IGNORE_SUFFIX)))
 			if (strcmp("language", tag->key))
 			{
-				offset += snprintf (msg+offset, sizeof(msg)-offset, "%s  %-16s: %s\n", indent, tag->key, tag->value);
+				offset += snprintf (msg+offset, sizeof(msg)-offset, "%s  %-8s: %s\n", indent, tag->key, tag->value);
 			}
 	}
 
@@ -47,7 +47,7 @@ static void dump_stream_format(AVFormatContext *ic, int i, int index, int is_out
 	AVStream *st = ic->streams[i];
 	AVDictionaryEntry *lang = av_dict_get(st->metadata, "language", NULL, 0);
 	avcodec_string(buf, sizeof(buf), st->codec, is_output);
-	offset += snprintf (msg+offset, sizeof(msg)-offset, "    Stream #%d.%d", index, i);
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "Stream #%d.%d", index, i);
 	/* the pid is an important information, so we display it */
 	/* XXX: add a generic system */
 	if (flags & AVFMT_SHOW_IDS)
@@ -77,7 +77,7 @@ static void dump_stream_format(AVFormatContext *ic, int i, int index, int is_out
 			print_fps(1 / av_q2d(st->codec->time_base), "tbc");
 	}
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
-	dump_metadata(NULL, st->metadata, "    ");
+	dump_metadata(NULL, st->metadata, "");
 }
 
 void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
@@ -91,7 +91,7 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 			is_output ? "To" : "From", url);
 	//dump_metadata(NULL, ic->metadata, "  ");
 	if (!is_output) {
-		offset += snprintf (msg+offset, sizeof(msg)-offset, "  Duration: ");
+		offset += snprintf (msg+offset, sizeof(msg)-offset, "Duration: ");
 		if (ic->duration != AV_NOPTS_VALUE) {
 			int hours, mins, secs, us;
 			secs  = ic->duration / AV_TIME_BASE;
