@@ -168,9 +168,9 @@ void media_info (const char *filename, char message[])
 	av_register_all ();
 	avcodec_register_all ();
 
-	openFile (filename);
-
 	offset = 0;
+
+	openFile (filename);
 
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
 	strncpy(message, msg, offset);
