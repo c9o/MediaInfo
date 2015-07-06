@@ -170,6 +170,8 @@ void media_info (const char *filename, char message[])
 
 	openFile (filename);
 
+	offset = 0;
+
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
 	strncpy(message, msg, offset);
 	message[offset] = '\0';
