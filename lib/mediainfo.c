@@ -87,11 +87,8 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 	if (ic->nb_streams && !printed)
 		return;
 
-	offset += snprintf (msg+offset, sizeof(msg)-offset, "%s #%d, %s, %s '%s':\n",
-			is_output ? "Output" : "Input",
-			index,
-			is_output ? ic->oformat->name : ic->iformat->name,
-			is_output ? "to" : "from", url);
+	offset += snprintf (msg+offset, sizeof(msg)-offset, "%s '%s':\n",
+			is_output ? "To" : "From", url);
 	dump_metadata(NULL, ic->metadata, "  ");
 	if (!is_output) {
 		offset += snprintf (msg+offset, sizeof(msg)-offset, "  Duration: ");
