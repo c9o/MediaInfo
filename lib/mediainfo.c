@@ -89,7 +89,7 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "%s '%s':\n",
 			is_output ? "To" : "From", url);
-	//dump_metadata(NULL, ic->metadata, "  ");
+	dump_metadata(NULL, ic->metadata, "  ");
 	if (!is_output) {
 		offset += snprintf (msg+offset, sizeof(msg)-offset, "Duration: ");
 		if (ic->duration != AV_NOPTS_VALUE) {
