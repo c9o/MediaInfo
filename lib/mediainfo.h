@@ -37,6 +37,8 @@ enum {
 	METADATA_KEY_TOOL_NAME				= 23,
 	METADATA_KEY_ENCODER				= 24,
 	METADATA_KEY_YEAR					= 25,
+	METADATA_KEY_COMPOSER				= 26,
+	METADATA_KEY_ORGANIZATION			= 27,
 
 	// Add more here...
 };
@@ -58,7 +60,7 @@ MetaNameMapEntry MetaNameMap[] = {
 	{METADATA_KEY_ALBUM,				"album"},
 	{METADATA_KEY_ARTIST,				"artist"},
 	{METADATA_KEY_GENRE,				"genre"},
-	{METADATA_KEY_ALBUMARTIST,			"albumartist"},
+	{METADATA_KEY_ALBUMARTIST,			"album_artist"},
 	{METADATA_KEY_LANGUAGE,				"language"},
 	{METADATA_KEY_CD_TRACK_NUMBER,		"track"},
 	{METADATA_KEY_DATE,					"date"},
@@ -66,8 +68,10 @@ MetaNameMapEntry MetaNameMap[] = {
 	{METADATA_KEY_COMMENT,				"comment"},
 	{METADATA_KEY_TAGGING_TIME,			"tagging time"},
 	{METADATA_KEY_TOOL_NAME,			"tool name"},
-	{METADATA_KEY_ENCODER,				"encoder"},
+	{METADATA_KEY_ENCODER,				"encode"},
 	{METADATA_KEY_YEAR,					"year"},
+	{METADATA_KEY_COMPOSER,				"composer"},
+	{METADATA_KEY_ORGANIZATION,			"organization"},
 };
 
 typedef struct MimeMapEntry
@@ -88,10 +92,10 @@ MimeMapEntry MimeMap[] = {
 };
 
 const int MAX_METADATA_STRING_LENGTH = 128;
-const int NUM_METADATA_KEYS = 26;
+const int NUM_METADATA_KEYS = 28;
 
 #define DIM(a) (sizeof(a)/ sizeof(a[0]))
-char mMetadataValues[26][128];
+char mMetadataValues[28][128];
 #endif
 
 void media_info (const char * filename, char msg[]);

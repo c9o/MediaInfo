@@ -232,14 +232,7 @@ void media_info (const char *filename, char message[])
 	openFile (filename);
 
 	for (i = 0; i < (int) DIM (MetaNameMap); i++) {
-		//tag = av_dict_get (mFormat->metadata, MetaNameMap[i].tagName, NULL, AV_DICT_IGNORE_SUFFIX);
-
-/*		if (tag) {
-			snprintf (mMetadataValues[MetaNameMap[i].key], MAX_METADATA_STRING_LENGTH, "%s", tag->value);
-		} */
-
 	printf ("%d %s \r\n", MetaNameMap[i].key, mMetadataValues[MetaNameMap[i].key]);
-
 	} 
 
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");
