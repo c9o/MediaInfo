@@ -208,28 +208,29 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 #endif
 	}
 
-	
+	int offset_v = 0;
+	int offset_a = 0;
 	for (i = 0; i < ic->nb_streams; i++)
 	{
 		AVStream *st = ic->streams[i];
-    	AVCodecContext *codec = st->codec;
-    	AVCodec *decoder = avcodec_find_decoder (codec->codec_id);
-    	int codec_type = codec->codec_type;
-    	char buf[256];
+		AVCodecContext *codec = st->codec;
+		AVCodec *decoder = avcodec_find_decoder (codec->codec_id);
+		int codec_type = codec->codec_type;
+		char buf[256];
 
-    	avcodec_string(buf, sizeof(buf), st->codec, is_output);
+		avcodec_string(buf, sizeof(buf), st->codec, is_output);
 
 #ifdef DEBUG_OPEN
-    	offset += snprintf (msg+offset, sizeof(msg)-offset, "Stream #%d.%d", index, i);
-    	offset += snprintf (msg+offset, sizeof(msg)-offset, ": %s", buf);
+		offset += snprintf (msg+offset, sizeof(msg)-offset, "Stream #%d.%d", index, i);
+		offset += snprintf (msg+offset, sizeof(msg)-offset, ": %s", buf);
 #endif
 
 		if (codec_type == AVMEDIA_TYPE_VIDEO) {
-			snprintf (mMetadataValues[MetaNameMap[4].key], MAX_METADATA_STRING_LENGTH, "true");
-			snprintf (mMetadataValues[MetaNameMap[10].key], MAX_METADATA_STRING_LENGTH, "%s", buf);
+			snprintf (mMetadataValues[MetaNameMap[4].key], MAX_METADATA_STRING_LENGTH, "True");
+			offset_v += snprintf (mMetadataValues[MetaNameMap[10].key] + offset_v, MAX_METADATA_STRING_LENGTH - offset_v, "\n%s", buf);
 		} else if (codec_type == AVMEDIA_TYPE_AUDIO) {
-			snprintf (mMetadataValues[MetaNameMap[3].key], MAX_METADATA_STRING_LENGTH, "true");
-			snprintf (mMetadataValues[MetaNameMap[11].key], MAX_METADATA_STRING_LENGTH, "%s", buf);
+			snprintf (mMetadataValues[MetaNameMap[3].key], MAX_METADATA_STRING_LENGTH, "True");
+			offset_a += snprintf (mMetadataValues[MetaNameMap[11].key] + offset_a, MAX_METADATA_STRING_LENGTH - offset_a, "\n%s", buf);
 		}
 
 		if (!printed[i])
@@ -278,7 +279,24 @@ int openFile (const char *url/*, AVFormatContext *format*/)
 
 void media_info (const char *filename, char message[])
 {
+	int i = 0, off_msg = 0;
+
 	collect_meta (filename);
+
+#if 0
+	for (i = 0; i < (int) DIM (MetaNameMap); i++) {
+	printf ("%-12s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
+	}
+#endif
+
+	for (i = 0; i < (int) DIM (MetaNameMap); i++) {
+		if (i < 6 || i == 10 || i == 11)
+			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-10s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
+		else if (strcmp(mMetadataValues[MetaNameMap[i].key], "N/A"))
+			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-10s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
+	}
+
+	message[off_msg] = '\0';
 
 #ifdef DEBUG_OPEN
 	strncpy(message, msg, offset);
@@ -306,10 +324,6 @@ void collect_meta (const char *filename)
 	}
 
 	openFile (filename);
-
-	for (i = 0; i < (int) DIM (MetaNameMap); i++) {
-	printf ("%-12s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
-	}
 
 #ifdef DEBUG_OPEN
 	offset += snprintf (msg+offset, sizeof(msg)-offset, "\n");

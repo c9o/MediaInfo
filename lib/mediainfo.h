@@ -39,6 +39,8 @@ enum {
 	METADATA_KEY_YEAR					= 25,
 	METADATA_KEY_COMPOSER				= 26,
 	METADATA_KEY_ORGANIZATION			= 27,
+	METADATA_KEY_AUTHOR					= 28,
+	METADATA_KEY_COPYRIGHT				= 29,
 
 	// Add more here...
 };
@@ -72,6 +74,8 @@ MetaNameMapEntry MetaNameMap[] = {
 	{METADATA_KEY_YEAR,					"Year"},
 	{METADATA_KEY_COMPOSER,				"Composer"},
 	{METADATA_KEY_ORGANIZATION,			"Organization"},
+	{METADATA_KEY_AUTHOR,				"Author"},
+	{METADATA_KEY_COPYRIGHT,			"Copyright"},
 };
 
 typedef struct MimeMapEntry
@@ -91,11 +95,11 @@ MimeMapEntry MimeMap[] = {
 	{"ape", "ape"}
 };
 
-const int MAX_METADATA_STRING_LENGTH = 128;
-const int NUM_METADATA_KEYS = 28;
+const int MAX_METADATA_STRING_LENGTH = 512;
+const int NUM_METADATA_KEYS = 30;
 
 #define DIM(a) (sizeof(a)/ sizeof(a[0]))
-char mMetadataValues[28][128];
+char mMetadataValues[30][512];
 #endif
 
 void media_info (const char *filename, char msg[]);
