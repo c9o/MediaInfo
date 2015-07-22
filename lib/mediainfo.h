@@ -2,7 +2,7 @@
 #define __MEDIAINFO_H__
 #include <stdio.h>
 
-#if 1
+//#define DEBUG_OPEN
 
 typedef struct MetaNameMapEntry
 {
@@ -44,34 +44,34 @@ enum {
 };
 
 MetaNameMapEntry MetaNameMap[] = {
-	{METADATA_KEY_DURATION,				"duration"},
-	{METADATA_KEY_START_TIME,			"start time"},
-	{METADATA_KEY_BITRATE,				"bitrate"},
-	{METADATA_KEY_HAS_AUDIO,			"has audio"},
-	{METADATA_KEY_HAS_VIDEO,			"has video"},
-	{METADATA_KEY_FRAME_RATE,			"framerate"},
-	{METADATA_KEY_TBN,					"tbn"},
-	{METADATA_KEY_TBC,					"tbc"},
+	{METADATA_KEY_DURATION,				"Duration"},
+	{METADATA_KEY_START_TIME,			"Start time"},
+	{METADATA_KEY_BITRATE,				"Bitrate"},
+	{METADATA_KEY_HAS_AUDIO,			"Has audio"},
+	{METADATA_KEY_HAS_VIDEO,			"Has video"},
+	{METADATA_KEY_FRAME_RATE,			"Framerate"},
+	{METADATA_KEY_TBN,					"TBN"},
+	{METADATA_KEY_TBC,					"TBC"},
 	{METADATA_KEY_PAR,					"PAR"},
 	{METADATA_KEY_DAR,					"DAR"},
-	{METADATA_KEY_VIDEO_CODEC,			"video codec"},
-	{METADATA_KEY_AUDIO_CODEC,			"audio codec"},
-	{METADATA_KEY_TITLE,				"title"},
-	{METADATA_KEY_ALBUM,				"album"},
-	{METADATA_KEY_ARTIST,				"artist"},
-	{METADATA_KEY_GENRE,				"genre"},
-	{METADATA_KEY_ALBUMARTIST,			"album_artist"},
-	{METADATA_KEY_LANGUAGE,				"language"},
-	{METADATA_KEY_CD_TRACK_NUMBER,		"track"},
-	{METADATA_KEY_DATE,					"date"},
-	{METADATA_KEY_TYER,					"tyer"},
-	{METADATA_KEY_COMMENT,				"comment"},
-	{METADATA_KEY_TAGGING_TIME,			"tagging time"},
-	{METADATA_KEY_TOOL_NAME,			"tool name"},
-	{METADATA_KEY_ENCODER,				"encode"},
-	{METADATA_KEY_YEAR,					"year"},
-	{METADATA_KEY_COMPOSER,				"composer"},
-	{METADATA_KEY_ORGANIZATION,			"organization"},
+	{METADATA_KEY_VIDEO_CODEC,			"Video"},
+	{METADATA_KEY_AUDIO_CODEC,			"Audio"},
+	{METADATA_KEY_TITLE,				"Title"},
+	{METADATA_KEY_ALBUM,				"Album"},
+	{METADATA_KEY_ARTIST,				"Artist"},
+	{METADATA_KEY_GENRE,				"Genre"},
+	{METADATA_KEY_ALBUMARTIST,			"Album_Artist"},
+	{METADATA_KEY_LANGUAGE,				"Language"},
+	{METADATA_KEY_CD_TRACK_NUMBER,		"Track"},
+	{METADATA_KEY_DATE,					"Date"},
+	{METADATA_KEY_TYER,					"Tyer"},
+	{METADATA_KEY_COMMENT,				"Comment"},
+	{METADATA_KEY_TAGGING_TIME,			"Tagging time"},
+	{METADATA_KEY_TOOL_NAME,			"Tool name"},
+	{METADATA_KEY_ENCODER,				"Encode"},
+	{METADATA_KEY_YEAR,					"Year"},
+	{METADATA_KEY_COMPOSER,				"Composer"},
+	{METADATA_KEY_ORGANIZATION,			"Organization"},
 };
 
 typedef struct MimeMapEntry
@@ -98,6 +98,5 @@ const int NUM_METADATA_KEYS = 28;
 char mMetadataValues[28][128];
 #endif
 
-void media_info (const char * filename, char msg[]);
-
-#endif
+void media_info (const char *filename, char msg[]);
+void collect_meta (const char *filename);
