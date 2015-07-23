@@ -281,6 +281,8 @@ void media_info (const char *filename, char message[])
 {
 	int i = 0, off_msg = 0;
 
+	message[0] = '\0';
+
 	collect_meta (filename);
 
 #if 0
@@ -289,12 +291,14 @@ void media_info (const char *filename, char message[])
 	}
 #endif
 
+#ifndef DEBUG_OPEN
 	for (i = 0; i < (int) DIM (MetaNameMap); i++) {
 		if (i < 6 || i == 10 || i == 11)
 			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-10s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
 		else if (strcmp(mMetadataValues[MetaNameMap[i].key], "N/A"))
 			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-10s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
 	}
+#endif
 
 	message[off_msg] = '\0';
 
