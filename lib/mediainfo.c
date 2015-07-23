@@ -179,7 +179,7 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 			hours = mins / 60;
 			mins %= 60;
 #ifdef DEBUG_OPEN
-			offset += snprintf (msg+offset, sizeof(msg)-offset, "%02d:%02d:%02d.%06d", hours, mins, secs, (int) av_rescale(us, 1000000, AV_TIME_BASE));
+			offset += snprintf (msg+offset, sizeof(msg)-offset, "%02d:%02d:%02d.%04d", hours, mins, secs, (int) av_rescale(us, 10000, AV_TIME_BASE));
 #endif
 			snprintf (mMetadataValues[MetaNameMap[1].key], MAX_METADATA_STRING_LENGTH, "%02d:%02d:%02d.%06d", hours, mins, secs, (int) av_rescale(us, 1000000, AV_TIME_BASE));
 		}
