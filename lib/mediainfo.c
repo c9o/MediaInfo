@@ -216,8 +216,7 @@ void collect_codec_info (AVCodecContext *enc)
 			if (enc->sample_rate) {
 				snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_SAMPLE_RATE].key], MAX_METADATA_STRING_LENGTH, "%d Hz", enc->sample_rate);
 			}
-			//av_strlcat(buf, ", ", buf_size);
-			//av_get_channel_layout_string(buf + strlen(buf), buf_size - strlen(buf), enc->channels, enc->channel_layout);
+			av_get_channel_layout_string (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_CHANNEL].key], MAX_METADATA_STRING_LENGTH, enc->channels, enc->channel_layout);
 			if (enc->sample_fmt != AV_SAMPLE_FMT_NONE) {
 				snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_SAMPLE_FORMAT].key], MAX_METADATA_STRING_LENGTH, "%s", av_get_sample_fmt_name(enc->sample_fmt));
 			}

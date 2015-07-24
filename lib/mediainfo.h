@@ -21,6 +21,7 @@ enum {
 	METADATA_KEY_AUDIO_CODEC			,
 	METADATA_KEY_VIDEO_PROFILE			,
 	METADATA_KEY_AUDIO_PROFILE			,
+	METADATA_KEY_AUDIO_CHANNEL			,
 	METADATA_KEY_AUDIO_SAMPLE_RATE		,
 	METADATA_KEY_AUDIO_SAMPLE_FORMAT	,
 	METADATA_KEY_FRAME_RATE				,
@@ -47,7 +48,7 @@ enum {
 	METADATA_KEY_COMPOSER				,
 	METADATA_KEY_ORGANIZATION			,
 	METADATA_KEY_AUTHOR					,
-	METADATA_KEY_COPYRIGHT				= 36,
+	METADATA_KEY_COPYRIGHT				= 37,
 
 	// Add more here...
 };
@@ -63,6 +64,7 @@ MetaNameMapEntry MetaNameMap[] = {
 	{METADATA_KEY_AUDIO_CODEC,			"Audio"},
 	{METADATA_KEY_VIDEO_PROFILE,		"Video Profile"},
 	{METADATA_KEY_AUDIO_PROFILE,		"Audio Profile"},
+	{METADATA_KEY_AUDIO_CHANNEL,		"Channel"},
 	{METADATA_KEY_AUDIO_SAMPLE_RATE,	"Sample Rate"},
 	{METADATA_KEY_AUDIO_SAMPLE_FORMAT,	"Sample Format"},
 	{METADATA_KEY_FRAME_RATE,			"Framerate"},
@@ -93,10 +95,10 @@ MetaNameMapEntry MetaNameMap[] = {
 };
 
 const int MAX_METADATA_STRING_LENGTH = 128;
-const int NUM_METADATA_KEYS = 37;
+const int NUM_METADATA_KEYS = 38;
 
 #define DIM(a) (sizeof(a)/ sizeof(a[0]))
-char mMetadataValues[37][128];
+char mMetadataValues[38][128];
 #endif
 
 void media_info (const char *filename, char msg[]);
