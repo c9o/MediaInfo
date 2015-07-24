@@ -14,7 +14,7 @@ enum {
 	METADATA_KEY_DURATION				= 0,
 	METADATA_KEY_START_TIME				,
 	METADATA_KEY_BITRATE				,
-	METADATA_KEY_MIMETYPE				,
+	METADATA_KEY_FILE_FORMAT			,
 	METADATA_KEY_HAS_VIDEO				,
 	METADATA_KEY_HAS_AUDIO				,
 	METADATA_KEY_VIDEO_CODEC			,
@@ -56,7 +56,7 @@ MetaNameMapEntry MetaNameMap[] = {
 	{METADATA_KEY_DURATION,				"Duration"},
 	{METADATA_KEY_START_TIME,			"Start Sime"},
 	{METADATA_KEY_BITRATE,				"Bitrate"},
-	{METADATA_KEY_MIMETYPE,				"Mime"},
+	{METADATA_KEY_FILE_FORMAT,			"Format"},
 	{METADATA_KEY_HAS_VIDEO,			"Has Video"},
 	{METADATA_KEY_HAS_AUDIO,			"Has Audio"},
 	{METADATA_KEY_VIDEO_CODEC,			"Video"},
@@ -90,23 +90,6 @@ MetaNameMapEntry MetaNameMap[] = {
 	{METADATA_KEY_ORGANIZATION,			"Organization"},
 	{METADATA_KEY_AUTHOR,				"Author"},
 	{METADATA_KEY_COPYRIGHT,			"Copyright"},
-};
-
-typedef struct MimeMapEntry
-{
-	const char *ffname;
-	const char *mime;
-} MimeMapEntry;
-
-MimeMapEntry MimeMap[] = {
-	{"mp3", "mpeg"},
-	{"matroska", "x-matroska"},
-	{"mov,mp4,m4a,3gp,3g2,mj2", "mp4"},
-	{"mpeg", "mpeg"},
-	{"avi", "avi"},
-	{"ogg", "ogg"},
-	{"rm", "rm"},
-	{"ape", "ape"}
 };
 
 const int MAX_METADATA_STRING_LENGTH = 128;

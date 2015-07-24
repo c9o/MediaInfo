@@ -78,7 +78,6 @@ static void dump_metadata(void *ctx, AVDictionary *m, const char *indent)
 /* "user interface" functions */
 static void dump_stream_format(AVFormatContext *ic, int i, int index, int is_output)
 {
-	int flags = (is_output ? ic->oformat->flags : ic->iformat->flags);
 	AVStream *st = ic->streams[i];
 	AVDictionaryEntry *lang = av_dict_get(st->metadata, "language", NULL, 0);
 
@@ -246,7 +245,6 @@ void collect_codec_info (AVCodecContext *enc)
 void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 {
 	int i;
-	const char *mimefmt = "";
 	uint8_t *printed = ic->nb_streams ? av_mallocz(ic->nb_streams) : NULL;
 	if (ic->nb_streams && !printed)
 		return;
@@ -328,7 +326,6 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 	{
 		AVStream *st = ic->streams[i];
 		AVCodecContext *codec = st->codec;
-		AVCodec *decoder = avcodec_find_decoder (codec->codec_id);
 		int codec_type = codec->codec_type;
 
 		if (codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -349,27 +346,18 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 			dump_stream_format(ic, i, index, is_output);
 	}
 
-	/**** Do not change below two blocks! ****/
 	if (cnt_a > 0)
 	{
 		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_AUDIO].key], MAX_METADATA_STRING_LENGTH, "True");
-		mimefmt = "audio/%s";
 	}
 
 	if (cnt_v > 0)
 	{
 		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_VIDEO].key], MAX_METADATA_STRING_LENGTH, "True");
-		mimefmt = "video/%s";
 	}
-	/**** ****/
 
 	if (ic->iformat) {
-		for (i = 0; i < (int) DIM (MimeMap); i++) {
-			if (strcmp (ic->iformat->name, MimeMap[i].ffname) == 0) {
-				snprintf (mMetadataValues[METADATA_KEY_MIMETYPE],
-						MAX_METADATA_STRING_LENGTH, mimefmt, MimeMap[i].mime);
-			}
-		}
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_FILE_FORMAT].key], MAX_METADATA_STRING_LENGTH, "%s", ic->iformat->name);
 	}
 
 	av_free(printed);
