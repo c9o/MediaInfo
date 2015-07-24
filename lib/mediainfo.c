@@ -130,6 +130,119 @@ static void dump_stream_format(AVFormatContext *ic, int i, int index, int is_out
 #endif
 }
 
+static int get_bit_rate(AVCodecContext *ctx)
+{
+    int bit_rate;
+    int bits_per_sample;
+
+    switch (ctx->codec_type) {
+    case AVMEDIA_TYPE_VIDEO:
+    case AVMEDIA_TYPE_DATA:
+    case AVMEDIA_TYPE_SUBTITLE:
+    case AVMEDIA_TYPE_ATTACHMENT:
+        bit_rate = ctx->bit_rate;
+        break;
+    case AVMEDIA_TYPE_AUDIO:
+        bits_per_sample = av_get_bits_per_sample(ctx->codec_id);
+        bit_rate = bits_per_sample ? ctx->sample_rate * ctx->channels * bits_per_sample : ctx->bit_rate;
+        break;
+    default:
+        bit_rate = 0;
+        break;
+    }
+    return bit_rate;
+}
+
+void collect_codec_info (AVCodecContext *enc)
+{
+    const char *codec_name;
+    const char *profile = NULL;
+    const AVCodec *p;
+    char buf1[32];
+    int bitrate;
+    AVRational display_aspect_ratio;
+
+	if (enc->codec)
+        p = enc->codec;
+    else
+        p = avcodec_find_decoder(enc->codec_id);
+
+    if (p) {
+        codec_name = p->name;
+        profile = av_get_profile_name(p, enc->profile);
+    } else if (enc->codec_id == AV_CODEC_ID_MPEG2TS) {
+        /* fake mpeg2 transport stream codec (currently not
+         * registered) */
+        codec_name = "mpeg2ts";
+    } else if (enc->codec_name[0] != '\0') {
+        codec_name = enc->codec_name;
+    } else {
+        /* output avi tags */
+        char tag_buf[32];
+        av_get_codec_tag_string(tag_buf, sizeof(tag_buf), enc->codec_tag);
+        snprintf(buf1, sizeof(buf1), "%s / 0x%04X", tag_buf, enc->codec_tag);
+        codec_name = buf1;
+    }
+
+    switch (enc->codec_type) {
+    case AVMEDIA_TYPE_VIDEO:
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_VIDEO_CODEC].key], MAX_METADATA_STRING_LENGTH, "%s", codec_name);
+        if (profile)
+		{
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_VIDEO_PROFILE].key], MAX_METADATA_STRING_LENGTH, "%s", profile);
+		}
+        if (enc->width) {
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_WIDTH].key], MAX_METADATA_STRING_LENGTH, "%d", enc->width);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HEIGHT].key], MAX_METADATA_STRING_LENGTH, "%d", enc->height);
+            if (enc->sample_aspect_ratio.num) {
+                av_reduce(&display_aspect_ratio.num, &display_aspect_ratio.den,
+                          enc->width * enc->sample_aspect_ratio.num,
+                          enc->height * enc->sample_aspect_ratio.den,
+                          1024 * 1024);
+				if (strcmp(mMetadataValues[MetaNameMap[METADATA_KEY_DAR].key], "N/A") == 0)
+				{
+					snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_DAR].key], MAX_METADATA_STRING_LENGTH, "%d:%d", display_aspect_ratio.num, display_aspect_ratio.den);
+				}
+				if (strcmp(mMetadataValues[MetaNameMap[METADATA_KEY_PAR].key], "N/A") == 0)
+				{
+					snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_PAR].key], MAX_METADATA_STRING_LENGTH, "%d:%d", enc->sample_aspect_ratio.num, enc->sample_aspect_ratio.den);
+				}
+            }
+        }
+        break;
+    case AVMEDIA_TYPE_AUDIO:
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_CODEC].key], MAX_METADATA_STRING_LENGTH, "%s", codec_name);
+        if (profile)
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_PROFILE].key], MAX_METADATA_STRING_LENGTH, "%s", profile);
+        if (enc->sample_rate) {
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_SAMPLE_RATE].key], MAX_METADATA_STRING_LENGTH, "%d Hz", enc->sample_rate);
+        }
+        //av_strlcat(buf, ", ", buf_size);
+        //av_get_channel_layout_string(buf + strlen(buf), buf_size - strlen(buf), enc->channels, enc->channel_layout);
+        if (enc->sample_fmt != AV_SAMPLE_FMT_NONE) {
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_SAMPLE_FORMAT].key], MAX_METADATA_STRING_LENGTH, "%s", av_get_sample_fmt_name(enc->sample_fmt));
+        }
+        break;
+    case AVMEDIA_TYPE_DATA:
+        break;
+    case AVMEDIA_TYPE_SUBTITLE:
+        break;
+    case AVMEDIA_TYPE_ATTACHMENT:
+        break;
+    default:
+        printf("Invalid Codec type %d\r\n", enc->codec_type);
+        return;
+    }
+	/**** Fixme:
+	keep below lines for video/audio bitrate extraction.
+	Add by Jingtao.
+	****/
+    bitrate = get_bit_rate(enc);
+    if (bitrate != 0) {
+        //printf("%d kb/s\r\n", bitrate / 1000);
+    }
+}
+
 void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 {
 	int i;
@@ -179,9 +292,9 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 			hours = mins / 60;
 			mins %= 60;
 #ifdef DEBUG_OPEN
-			offset += snprintf (msg+offset, sizeof(msg)-offset, "%02d:%02d:%02d.%04d", hours, mins, secs, (int) av_rescale(us, 10000, AV_TIME_BASE));
+			offset += snprintf (msg+offset, sizeof(msg)-offset, "%02d:%02d:%02d.%02d", hours, mins, secs, (int) av_rescale(us, 100, AV_TIME_BASE));
 #endif
-			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_START_TIME].key], MAX_METADATA_STRING_LENGTH, "%02d:%02d:%02d.%04d", hours, mins, secs, (int) av_rescale(us, 10000, AV_TIME_BASE));
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_START_TIME].key], MAX_METADATA_STRING_LENGTH, "%02d:%02d:%02d.%02d", hours, mins, secs, (int) av_rescale(us, 100, AV_TIME_BASE));
 		}
 
 #ifdef DEBUG_OPEN
@@ -208,8 +321,6 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 #endif
 	}
 
-	int offset_v = 0;
-	int offset_a = 0;
 	int cnt_v = 0;
 	int cnt_a = 0;
 	for (i = 0; i < ic->nb_streams; i++)
@@ -218,22 +329,38 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 		AVCodecContext *codec = st->codec;
 		AVCodec *decoder = avcodec_find_decoder (codec->codec_id);
 		int codec_type = codec->codec_type;
-		char buf[256];
+		char buf[128];
 
+#if 0
 		avcodec_string(buf, sizeof(buf), st->codec, is_output);
 
 #ifdef DEBUG_OPEN
 		offset += snprintf (msg+offset, sizeof(msg)-offset, "Stream #%d.%d", index, i);
 		offset += snprintf (msg+offset, sizeof(msg)-offset, ": %s", buf);
 #endif
+#endif
 
 		if (codec_type == AVMEDIA_TYPE_VIDEO) {
-			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_VIDEO].key], MAX_METADATA_STRING_LENGTH, "True");
-			offset_v += snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_VIDEO_CODEC].key] + offset_v, MAX_METADATA_STRING_LENGTH - offset_v, "\n%s", buf);
+			cnt_v ++;
+			if (cnt_v == 1)
+			{
+				collect_codec_info (st->codec);
+				//snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_VIDEO_CODEC].key], MAX_METADATA_STRING_LENGTH, "%s", buf);
+			}
 		} else if (codec_type == AVMEDIA_TYPE_AUDIO) {
-			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_AUDIO].key], MAX_METADATA_STRING_LENGTH, "True");
-			offset_a += snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_CODEC].key] + offset_a, MAX_METADATA_STRING_LENGTH - offset_a, "\n%s", buf);
+			cnt_a ++;
+			if (cnt_a == 1)
+			{
+				collect_codec_info (st->codec);
+				//snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_CODEC].key], MAX_METADATA_STRING_LENGTH, "%s", buf);
+			}
 		}
+
+		if (cnt_v > 0)
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_VIDEO].key], MAX_METADATA_STRING_LENGTH, "True");
+
+		if (cnt_a > 0)
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_AUDIO].key], MAX_METADATA_STRING_LENGTH, "True");
 
 		if (!printed[i])
 			dump_stream_format(ic, i, index, is_output);
@@ -295,10 +422,10 @@ void media_info (const char *filename, char message[])
 
 #ifndef DEBUG_OPEN
 	for (i = 0; i < (int) DIM (MetaNameMap); i++) {
-		if (i < 6 || i == 10 || i == 11)
-			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-10s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
+		if (i < METADATA_KEY_FRAME_RATE || i == METADATA_KEY_VIDEO_CODEC || i == METADATA_KEY_AUDIO_CODEC)
+			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-13s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
 		else if (strcmp(mMetadataValues[MetaNameMap[i].key], "N/A"))
-			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-10s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
+			off_msg += snprintf (message + off_msg, MAX_METADATA_STRING_LENGTH, "%-13s: %s \r\n", MetaNameMap[i].tagName, mMetadataValues[MetaNameMap[i].key]);
 	}
 #endif
 
