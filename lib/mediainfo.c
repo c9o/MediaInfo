@@ -19,9 +19,9 @@ static void print_fps(double d, const char *postfix)
 #endif
 
 		if (strcmp(postfix, "fps") == 0)
-			snprintf (mMetadataValues[MetaNameMap[5].key], MAX_METADATA_STRING_LENGTH, "%3.2f %s", d, postfix);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_FRAME_RATE].key], MAX_METADATA_STRING_LENGTH, "%3.2f %s", d, postfix);
 		else
-			snprintf (mMetadataValues[MetaNameMap[7].key], MAX_METADATA_STRING_LENGTH, "%3.2f %s", d, postfix);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_TBC].key], MAX_METADATA_STRING_LENGTH, "%3.2f %s", d, postfix);
 	}
 	else if (v % (100 * 1000))
 	{
@@ -30,9 +30,9 @@ static void print_fps(double d, const char *postfix)
 #endif
 
 		if (strcmp(postfix, "fps") == 0)
-			snprintf (mMetadataValues[MetaNameMap[5].key], MAX_METADATA_STRING_LENGTH, "%1.0f %s", d, postfix);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_FRAME_RATE].key], MAX_METADATA_STRING_LENGTH, "%1.0f %s", d, postfix);
 		else
-			snprintf (mMetadataValues[MetaNameMap[7].key], MAX_METADATA_STRING_LENGTH, "%1.0f %s", d, postfix);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_TBC].key], MAX_METADATA_STRING_LENGTH, "%1.0f %s", d, postfix);
 	}
 	else
 	{
@@ -40,7 +40,7 @@ static void print_fps(double d, const char *postfix)
 		offset += snprintf (msg+offset, sizeof(msg)-offset, ", %1.0fk %s", d / 1000, postfix);
 #endif
 
-		snprintf (mMetadataValues[MetaNameMap[6].key], MAX_METADATA_STRING_LENGTH, "%1.0fk %s", d / 1000, postfix);
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_TBN].key], MAX_METADATA_STRING_LENGTH, "%1.0fk %s", d / 1000, postfix);
 	}
 }
 
@@ -97,7 +97,7 @@ static void dump_stream_format(AVFormatContext *ic, int i, int index, int is_out
 		offset += snprintf (msg+offset, sizeof(msg)-offset, "(%s)", lang->value);
 #endif
 
-		snprintf (mMetadataValues[MetaNameMap[17].key], MAX_METADATA_STRING_LENGTH, "(%s)", lang->value);
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_LANGUAGE].key], MAX_METADATA_STRING_LENGTH, "(%s)", lang->value);
 	}
 
 	if (st->sample_aspect_ratio.num && av_cmp_q(st->sample_aspect_ratio, st->codec->sample_aspect_ratio)) {
@@ -111,8 +111,8 @@ static void dump_stream_format(AVFormatContext *ic, int i, int index, int is_out
 		offset += snprintf (msg+offset, sizeof(msg)-offset, ", PAR %d:%d DAR %d:%d", st->sample_aspect_ratio.num, st->sample_aspect_ratio.den, display_aspect_ratio.num, display_aspect_ratio.den);
 #endif
 
-		snprintf (mMetadataValues[MetaNameMap[8].key], MAX_METADATA_STRING_LENGTH, "PAR %d:%d", st->sample_aspect_ratio.num, st->sample_aspect_ratio.den);
-		snprintf (mMetadataValues[MetaNameMap[9].key], MAX_METADATA_STRING_LENGTH, "DAR %d:%d", display_aspect_ratio.num, display_aspect_ratio.den);
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_PAR].key], MAX_METADATA_STRING_LENGTH, "PAR %d:%d", st->sample_aspect_ratio.num, st->sample_aspect_ratio.den);
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_DAR].key], MAX_METADATA_STRING_LENGTH, "DAR %d:%d", display_aspect_ratio.num, display_aspect_ratio.den);
 	}
 
 	if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -160,12 +160,12 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 #ifdef DEBUG_OPEN
 			offset += snprintf (msg+offset, sizeof(msg)-offset, "%02d:%02d:%02d.%02d", hours, mins, secs, (100 * us) / AV_TIME_BASE);
 #endif
-			snprintf (mMetadataValues[MetaNameMap[0].key], MAX_METADATA_STRING_LENGTH, "%02d:%02d:%02d.%02d", hours, mins, secs, (100 * us) / AV_TIME_BASE);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_DURATION].key], MAX_METADATA_STRING_LENGTH, "%02d:%02d:%02d.%02d", hours, mins, secs, (100 * us) / AV_TIME_BASE);
 		} else {
 #ifdef DEBUG_OPEN
 			offset += snprintf (msg+offset, sizeof(msg)-offset, "N/A");
 #endif
-			snprintf (mMetadataValues[MetaNameMap[0].key], MAX_METADATA_STRING_LENGTH, "N/A");
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_DURATION].key], MAX_METADATA_STRING_LENGTH, "N/A");
 		}
 		if (ic->start_time != AV_NOPTS_VALUE) {
 			int hours, mins, secs, us;
@@ -181,7 +181,7 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 #ifdef DEBUG_OPEN
 			offset += snprintf (msg+offset, sizeof(msg)-offset, "%02d:%02d:%02d.%04d", hours, mins, secs, (int) av_rescale(us, 10000, AV_TIME_BASE));
 #endif
-			snprintf (mMetadataValues[MetaNameMap[1].key], MAX_METADATA_STRING_LENGTH, "%02d:%02d:%02d.%06d", hours, mins, secs, (int) av_rescale(us, 1000000, AV_TIME_BASE));
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_START_TIME].key], MAX_METADATA_STRING_LENGTH, "%02d:%02d:%02d.%04d", hours, mins, secs, (int) av_rescale(us, 10000, AV_TIME_BASE));
 		}
 
 #ifdef DEBUG_OPEN
@@ -193,14 +193,14 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 #ifdef DEBUG_OPEN
 			offset += snprintf (msg+offset, sizeof(msg)-offset, "%d kb/s", ic->bit_rate / 1000);
 #endif
-			snprintf (mMetadataValues[MetaNameMap[2].key], MAX_METADATA_STRING_LENGTH, "%d kb/s", ic->bit_rate / 1000);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_BITRATE].key], MAX_METADATA_STRING_LENGTH, "%d kb/s", ic->bit_rate / 1000);
 		}
 		else
 		{
 #ifdef DEBUG_OPEN
 			offset += snprintf (msg+offset, sizeof(msg)-offset, "N/A");
 #endif
-			snprintf (mMetadataValues[MetaNameMap[2].key], MAX_METADATA_STRING_LENGTH, "N/A");
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_BITRATE].key], MAX_METADATA_STRING_LENGTH, "N/A");
 		}
 
 #ifdef DEBUG_OPEN
@@ -210,6 +210,8 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 
 	int offset_v = 0;
 	int offset_a = 0;
+	int cnt_v = 0;
+	int cnt_a = 0;
 	for (i = 0; i < ic->nb_streams; i++)
 	{
 		AVStream *st = ic->streams[i];
@@ -226,11 +228,11 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 #endif
 
 		if (codec_type == AVMEDIA_TYPE_VIDEO) {
-			snprintf (mMetadataValues[MetaNameMap[4].key], MAX_METADATA_STRING_LENGTH, "True");
-			offset_v += snprintf (mMetadataValues[MetaNameMap[10].key] + offset_v, MAX_METADATA_STRING_LENGTH - offset_v, "\n%s", buf);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_VIDEO].key], MAX_METADATA_STRING_LENGTH, "True");
+			offset_v += snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_VIDEO_CODEC].key] + offset_v, MAX_METADATA_STRING_LENGTH - offset_v, "\n%s", buf);
 		} else if (codec_type == AVMEDIA_TYPE_AUDIO) {
-			snprintf (mMetadataValues[MetaNameMap[3].key], MAX_METADATA_STRING_LENGTH, "True");
-			offset_a += snprintf (mMetadataValues[MetaNameMap[11].key] + offset_a, MAX_METADATA_STRING_LENGTH - offset_a, "\n%s", buf);
+			snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_AUDIO].key], MAX_METADATA_STRING_LENGTH, "True");
+			offset_a += snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_CODEC].key] + offset_a, MAX_METADATA_STRING_LENGTH - offset_a, "\n%s", buf);
 		}
 
 		if (!printed[i])
