@@ -54,7 +54,7 @@ enum {
 
 MetaNameMapEntry MetaNameMap[] = {
 	{METADATA_KEY_DURATION,				"Duration"},
-	{METADATA_KEY_START_TIME,			"Start Sime"},
+	{METADATA_KEY_START_TIME,			"Start Time"},
 	{METADATA_KEY_BITRATE,				"Bitrate"},
 	{METADATA_KEY_FILE_FORMAT,			"Format"},
 	{METADATA_KEY_HAS_VIDEO,			"Has Video"},
