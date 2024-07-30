@@ -1,3 +1,17 @@
+/****************************************************************************
+**
+** Copyright (c) [2015] Qualcomm Technologies International, Ltd.
+** All Rights Reserved.
+** Qualcomm Technologies Inc. Confidential and Proprietary.
+** Not a Contribution. Notifications and licenses are retained for attribution
+** purposes only . Your use of this code is governed by the terms of your
+** license agreement with Qualcomm Technologies International, Ltd.(“QTIL”).
+** Except as may be granted by separate express written agreement, this file
+** provides no rights under or license to any QTIL or its affiliates patents,
+** trademarks, copyrights,or other intellectual property.
+**
+****************************************************************************/
+
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
@@ -78,7 +92,6 @@ static void dump_metadata(void *ctx, AVDictionary *m, const char *indent)
 /* "user interface" functions */
 static void dump_stream_format(AVFormatContext *ic, int i, int index, int is_output)
 {
-	int flags = (is_output ? ic->oformat->flags : ic->iformat->flags);
 	AVStream *st = ic->streams[i];
 	AVDictionaryEntry *lang = av_dict_get(st->metadata, "language", NULL, 0);
 
@@ -217,8 +230,7 @@ void collect_codec_info (AVCodecContext *enc)
 			if (enc->sample_rate) {
 				snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_SAMPLE_RATE].key], MAX_METADATA_STRING_LENGTH, "%d Hz", enc->sample_rate);
 			}
-			//av_strlcat(buf, ", ", buf_size);
-			//av_get_channel_layout_string(buf + strlen(buf), buf_size - strlen(buf), enc->channels, enc->channel_layout);
+			av_get_channel_layout_string (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_CHANNEL].key], MAX_METADATA_STRING_LENGTH, enc->channels, enc->channel_layout);
 			if (enc->sample_fmt != AV_SAMPLE_FMT_NONE) {
 				snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_AUDIO_SAMPLE_FORMAT].key], MAX_METADATA_STRING_LENGTH, "%s", av_get_sample_fmt_name(enc->sample_fmt));
 			}
@@ -246,7 +258,6 @@ void collect_codec_info (AVCodecContext *enc)
 void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 {
 	int i;
-	const char *mimefmt = "";
 	uint8_t *printed = ic->nb_streams ? av_mallocz(ic->nb_streams) : NULL;
 	if (ic->nb_streams && !printed)
 		return;
@@ -328,7 +339,6 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 	{
 		AVStream *st = ic->streams[i];
 		AVCodecContext *codec = st->codec;
-		AVCodec *decoder = avcodec_find_decoder (codec->codec_id);
 		int codec_type = codec->codec_type;
 
 		if (codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -349,27 +359,18 @@ void dump_format(AVFormatContext *ic, int index, const char *url, int is_output)
 			dump_stream_format(ic, i, index, is_output);
 	}
 
-	/**** Do not change below two blocks! ****/
 	if (cnt_a > 0)
 	{
 		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_AUDIO].key], MAX_METADATA_STRING_LENGTH, "True");
-		mimefmt = "audio/%s";
 	}
 
 	if (cnt_v > 0)
 	{
 		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_HAS_VIDEO].key], MAX_METADATA_STRING_LENGTH, "True");
-		mimefmt = "video/%s";
 	}
-	/**** ****/
 
 	if (ic->iformat) {
-		for (i = 0; i < (int) DIM (MimeMap); i++) {
-			if (strcmp (ic->iformat->name, MimeMap[i].ffname) == 0) {
-				snprintf (mMetadataValues[METADATA_KEY_MIMETYPE],
-						MAX_METADATA_STRING_LENGTH, mimefmt, MimeMap[i].mime);
-			}
-		}
+		snprintf (mMetadataValues[MetaNameMap[METADATA_KEY_FILE_FORMAT].key], MAX_METADATA_STRING_LENGTH, "%s", ic->iformat->name);
 	}
 
 	av_free(printed);
